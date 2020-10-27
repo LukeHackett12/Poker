@@ -1,10 +1,16 @@
 import re
+import Cards
 from subprocess import call, check_output, Popen, PIPE,  STDOUT
-import time
-import ffmpeg # pip install ffmpeg-python
-import pyautogui
 import numpy as np
-from pyautogui import position
+from pyautogui import position, locateOnScreen, screenshot
+import cv2 
+
+
+CARD_OFFSETS_RATIOS = [0.44,0.59]
+CARD_SIZE_RATIOS = [0.12,0.07]
+
+RANK_TEMPLATES = Cards.load_ranks("/Users/lukehackett/Documents/Poker/cards/")
+SUIT_TEMPLATES = Cards.load_suits("/Users/lukehackett/Documents/Poker/cards/")
 
 def getWindowSize():
     pokerWindows = check_output(["GetWindowID", "PokerStarsEU", "--list"]).decode('UTF-8').splitlines()
@@ -16,19 +22,45 @@ def getWindowSize():
     return size # for simplictity assume all the poker windows are around the same size
 
 def getWindowLocation():
-    instance = pyautogui.locateOnScreen('/Users/lukehackett/Documents/College/4th Year/Machine Learning/poker/star.png', grayscale=True, confidence=.85)
+    instance = locateOnScreen('/Users/lukehackett/Documents/Poker/star.png', grayscale=True, confidence=.5)
     if instance != None:
         return [int(instance.left), int(instance.top)]
-    return [0,0]
+    return None
+
+def calcCardScreenInfo(gameWindowSize, windowLocation):
+    cardScreenInfo = {}
+
+    #Card position
+    cardXPos = windowLocation[0] + (gameWindowSize[0] * CARD_OFFSETS_RATIOS[0])
+    cardYPos = windowLocation[1] + (gameWindowSize[1] * CARD_OFFSETS_RATIOS[1])
+    cardScreenInfo['position'] = [cardXPos, cardYPos]
+
+    #Card Size
+    cardXSize = gameWindowSize[0] * CARD_SIZE_RATIOS[0]
+    cardYSize = gameWindowSize[1] * CARD_SIZE_RATIOS[1]
+    cardScreenInfo['size'] = [cardXSize, cardYSize]
+
+    return cardScreenInfo
+
+def readCardData(cardImg):
+    return 0
 
 def gameLoop(size, windowLocation):
     while True:
         print(size)
         print(windowLocation)
 
-gameWindowSize = getWindowSize()
-windowLocation = getWindowLocation()
+#gameWindowSize = getWindowSize()
+#windowLocation = getWindowLocation()
+#cardScreenInfo = calcCardScreenInfo(gameWindowSize, windowLocation)
 
-gameLoop(gameWindowSize, windowLocation)
+#gameLoop(gameWindowSize, windowLocation)
+cardImg = cv2.imread('/Users/lukehackett/Documents/Poker/my_screenshot.png')
+readCardData(cardImg)
 
-#pyautogui.screenshot('my_screenshot.png', region=(x,y,int(sizes[0])*2,int(sizes[1])*2))
+'''
+screenshot('my_screenshot.png', region=(cardScreenInfo['position'][0],
+                                        cardScreenInfo['position'][1],
+                                        cardScreenInfo['size'][0],
+                                        cardScreenInfo['size'][1]))
+'''
