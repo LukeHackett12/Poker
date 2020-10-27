@@ -1,16 +1,15 @@
 import re
-import Cards
-from subprocess import call, check_output, Popen, PIPE,  STDOUT
-import numpy as np
-from pyautogui import position, locateOnScreen, screenshot
 import cv2 
+import pytesseract 
+import numpy as np
 
+import Card
+
+from subprocess import call, check_output, Popen, PIPE,  STDOUT
+from pyautogui import position, locateOnScreen, screenshot
 
 CARD_OFFSETS_RATIOS = [0.44,0.59]
 CARD_SIZE_RATIOS = [0.12,0.07]
-
-RANK_TEMPLATES = Cards.load_ranks("/Users/lukehackett/Documents/Poker/cards/")
-SUIT_TEMPLATES = Cards.load_suits("/Users/lukehackett/Documents/Poker/cards/")
 
 def getWindowSize():
     pokerWindows = check_output(["GetWindowID", "PokerStarsEU", "--list"]).decode('UTF-8').splitlines()
@@ -43,7 +42,23 @@ def calcCardScreenInfo(gameWindowSize, windowLocation):
     return cardScreenInfo
 
 def readCardData(cardImg):
-    return 0
+    # Get Card Ranks
+    cardGray = cv2.cvtColor(cardImg, cv2.COLOR_BGR2GRAY)
+    cardGray = ~cardGray
+    cardGray = cv2.threshold(cardGray, 100, 255, cv2.THRESH_BINARY)[1]
+    text = pytesseract.image_to_string(cardGray, lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')
+
+    # Get Card Suits
+
+    cards = []
+
+    for rank in text:
+        card = Card()
+        card.rank = rank
+        card.suit = "test"
+        cards.append(card)
+
+    return cards
 
 def gameLoop(size, windowLocation):
     while True:
