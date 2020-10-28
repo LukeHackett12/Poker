@@ -10,6 +10,7 @@ from pyautogui import position, locateOnScreen, screenshot
 
 CARD_OFFSETS_RATIOS = [0.44,0.59]
 CARD_SIZE_RATIOS = [0.12,0.07]
+CARD_COLOR_RATIOS = [0.25,0.75]
 
 def getWindowSize():
     pokerWindows = check_output(["GetWindowID", "PokerStarsEU", "--list"]).decode('UTF-8').splitlines()
@@ -49,14 +50,33 @@ def readCardData(cardImg):
     text = pytesseract.image_to_string(cardGray, lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')
 
     # Get Card Suits
+    cardRgb = cv2.cvtColor(cardImg, cv2.COLOR_BGR2RGB)
+    
+    h, w, _ = cardRgb.shape
+    colors = [cardRgb[int(h/2), int(w * CARD_COLOR_RATIOS[0])],cardRgb[int(h/2), int(w * CARD_COLOR_RATIOS[1])]]
+
+    cardSuits = []
+    # This is stupid below, need to change
+    for color in colors:
+        if color[0] > 150:
+            cardSuits.append('heart')
+            break
+        if color[1] > 150:
+            cardSuits.append('club')
+            break
+        if color[2] > 150:
+            cardSuits.append('diamond')
+            break
+        else:
+            cardSuits.append('spade')
 
     cards = []
-
+    i=0
     for rank in text:
-        card = Card()
-        card.rank = rank
-        card.suit = "test"
-        cards.append(card)
+        cards.append(Card())
+        cards[i].rank = rank
+        cards[i].suit = cardSuits[i]
+        i = i+1
 
     return cards
 
