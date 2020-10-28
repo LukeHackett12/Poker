@@ -3,8 +3,7 @@ import cv2
 import pytesseract 
 import numpy as np
 
-import Card
-
+from Card import Card
 from subprocess import call, check_output, Popen, PIPE,  STDOUT
 from pyautogui import position, locateOnScreen, screenshot
 
@@ -60,13 +59,10 @@ def readCardData(cardImg):
     for color in colors:
         if color[0] > 150:
             cardSuits.append('heart')
-            break
-        if color[1] > 150:
+        elif color[1] > 150:
             cardSuits.append('club')
-            break
-        if color[2] > 150:
+        elif color[2] > 150:
             cardSuits.append('diamond')
-            break
         else:
             cardSuits.append('spade')
 
