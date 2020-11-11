@@ -7,12 +7,13 @@ from Card import Card
 from subprocess import check_output
 from pyautogui import locateOnScreen, screenshot
 
-#OWN_CARD_OFFSETS_RATIOS = [0.22,0.26]
-#OWN_CARD_SIZE_RATIOS = [0.06,0.035]
-#FLOP_OFFSETS_RATIOS = [0.17,0.12]
-#FLOP_SIZE_RATIOS = [0.16,0.065]
-#CARD_COLOR_RATIOS = [0.25,0.75]
-#FLOP_COLOR_RATIOS = [0.16,0.32,0.5,0.66,0.84]
+#These were on 3440 1440 monitor
+OWN_CARD_OFFSETS_RATIOS = [0.22,0.26]
+OWN_CARD_SIZE_RATIOS = [0.06,0.035]
+FLOP_OFFSETS_RATIOS = [0.17,0.12]
+FLOP_SIZE_RATIOS = [0.16,0.065]
+CARD_COLOR_RATIOS = [0.25,0.75]
+FLOP_COLOR_RATIOS = [0.16,0.32,0.5,0.66,0.84]
 
 def getWindowSize():
     pokerWindows = check_output(["GetWindowID", "PokerStarsEU", "--list"]).decode('UTF-8').splitlines()
